@@ -42,17 +42,17 @@ function Board:getCoOrdinates()
     
     for i = 0, 9 do 
         local row = self.x -- 50
-        local tempRow = self.y -- 450
+        local tempRow = 410 -- 450
 
         for j = 0, 9 do 
 if i % 2 == 1 then 
-    self.tiles[i][9-j].x = tempRow - self.tileWidth -- 450 - width of a tile
+    self.tiles[i][9-j].x = tempRow  -- 450 - width of a tile
     self.tiles[i][9-j].y = column -- 450
 
     self.tiles[i][9-j].x1 = self.tiles[i][9-j].x
     self.tiles[i][9-j].y1 = self.tiles[i][9-j].y - self.tileHeight
 
-    self.tiles[i][9-j].x2 = self.tiles[i][9-j].x1 + self.tileWidth
+    self.tiles[i][9-j].x2 = tempRow + self.tileWidth
     self.tiles[i][9-j].y2 = self.tiles[i][9-j].y1
 
     self.tiles[i][9-j].x3 = self.tiles[i][9-j].x + self.tileWidth

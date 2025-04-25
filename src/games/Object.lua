@@ -18,9 +18,6 @@ function Object:init(x, y, width, height)
     self.y = y
     self.width = width
     self.height = height
-
-
-
     self.newX = 0
     self.newY = 0
     self.newX1 = 0
@@ -36,6 +33,7 @@ function Object:draw()
     self:drawLadder2(2,9,3,7,0)
     self:drawLadder3(3,2,0,0,2)
     self:drawLadder4(4,2,9,0,7)
+    self:drawLadder5(4,7,3,5,2)
     if debugFlag then
         --love.graphics.rectangle("line",self.x,self.y,self.width,self.height)
     end
@@ -57,7 +55,6 @@ function Object:createLadder(tileNumber, startRow, startColumn, endRow, endColum
     self.scaleX =  self.width / self.ObjectTable[tileNumber]:getWidth()
 
     self.scaleY =  self.height / self.ObjectTable[tileNumber]:getHeight()
-
 end
 
 function Object:drawLadder1(tileNumber, startRow, startColumn, endRow, endColumn)
@@ -68,7 +65,6 @@ function Object:drawLadder1(tileNumber, startRow, startColumn, endRow, endColumn
         self.newX, self.newY, 
         -0.1,
         self.scaleX, self.scaleY)
-
 
         if debugFlag then
             love.graphics.setColor(1,0,0)
@@ -105,14 +101,12 @@ function Object:drawLadder3(tileNumber, startRow, startColumn, endRow, endColumn
         -0.35,
         self.scaleX/2.5, self.scaleY/2.5)
 
-
         if debugFlag then
             love.graphics.setColor(1,0,0)
             love.graphics.circle("line", self.newX, self.newY, 5)
             love.graphics.circle("line", self.newX1, self.newY1, 5)
             love.graphics.setColor(1,1,1)
         end
-
 end
 
 function Object:drawLadder4(tileNumber, startRow, startColumn, endRow, endColumn)
@@ -122,8 +116,7 @@ function Object:drawLadder4(tileNumber, startRow, startColumn, endRow, endColumn
         self.ObjectTable[tileNumber],
         self.newX, self.newY, 
         0.3,
-        self.scaleX/2.5, self.scaleY/2.5,self.ObjectTable[tileNumber]:getWidth(),0)
-
+        self.scaleX/2.2, self.scaleY/2.2,self.ObjectTable[tileNumber]:getWidth(),0)
 
         if debugFlag then
             love.graphics.setColor(1,0,0)
@@ -131,7 +124,23 @@ function Object:drawLadder4(tileNumber, startRow, startColumn, endRow, endColumn
             love.graphics.circle("line", self.newX1, self.newY1, 5)
             love.graphics.setColor(1,1,1)
         end
+end
 
+function Object:drawLadder5(tileNumber, startRow, startColumn, endRow, endColumn)
+    self:createLadder(tileNumber, startRow, startColumn, endRow, endColumn)
+
+    love.graphics.draw(
+        self.ObjectTable[tileNumber],
+        self.newX, self.newY, 
+        0,
+        self.scaleX/2.5, self.scaleY/2.5,self.ObjectTable[tileNumber]:getWidth(),0)
+
+        if debugFlag then
+            love.graphics.setColor(1,0,0)
+            love.graphics.circle("line", self.newX, self.newY, 5)
+            love.graphics.circle("line", self.newX1, self.newY1, 5)
+            love.graphics.setColor(1,1,1)
+        end
 end
 
 

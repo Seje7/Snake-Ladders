@@ -8,6 +8,8 @@ local Die = require "src.games.Die"
 local Stats = require "src.games.Stats"
 local Object = require "src.games.Object"
 local Board = require "src.games.Board"
+local Player = require "src.games.Player"
+local Snake = require "src.games.Snake"
 
 local tileSize = 96
 local statFont = love.graphics.newFont(26)
@@ -28,6 +30,8 @@ function love.load()
     die = Die(480, 300)
 
     object = Object(50, 50, 140, 260)
+
+    player = Player(50,400)
 
     
 end
@@ -76,6 +80,7 @@ function love.update(dt)
      
     elseif gameState == "play" then
       die:update(dt)
+      player:update(dt)
       if stats.dieRecording >= stats.MAX_BOARD_ROWS then
         gameState = "over"
 
@@ -119,6 +124,8 @@ function drawPlayState()
     bg1:draw()
     boarding:draw()
     object:draw()
+    player:draw()
+
     die:draw()
     stats:draw()
 

@@ -23,9 +23,9 @@ end
 
 function Stats:draw()
     love.graphics.setColor(1,0,0) -- Magenta
-   -- love.graphics.printf("Level "..tostring(self.level), statFont, gameWidth/2-60,self.y,100,"center")
+    love.graphics.printf("Rows"..tostring(self.numberOfRows), statFont, 150,10,200)
     love.graphics.printf("Score "..tostring(self.dieRecording), statFont ,10,10,200) -- .."/"..tostring(self.maxSecs)
-   -- love.graphics.printf("Time "..tostring(self.elaspsedTime), statFont,gameWidth-210,10,200,"right")
+    --love.graphics.printf("Time "..tostring(self.elaspsedTime), statFont,gameWidth-210,10,200,"right")
     love.graphics.setColor(1,1,1) -- White
 end
 

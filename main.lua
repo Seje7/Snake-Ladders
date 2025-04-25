@@ -10,6 +10,12 @@ local Object = require "src.games.Object"
 local Board = require "src.games.Board"
 local Player = require "src.games.Player"
 local Snake = require "src.games.Snake"
+local Tween = require "libs.tween"
+local Sounds = require "src.games.Sounds"
+
+local wordPostion = { x = 700, y = 20, alpha = 0 }  -- creates a table of the word position
+local liftWord = Tween.new(2, wordPostion, { x = 200 }) -- Tween animation
+
 
 local tileSize = 96
 local statFont = love.graphics.newFont(26)
@@ -33,7 +39,7 @@ function love.load()
 
     player = Player(50,400)
 
-    
+    sounds = Sounds
 end
 
 -- When the game window resizes
@@ -54,6 +60,7 @@ function love.keypressed(key)
     elseif key == "space" and gameState == "play" then
             die:roll()
             stats:Recording()
+            stats:Rows()
     end
 end
 
@@ -98,6 +105,7 @@ function love.draw()
     -- always draw between Push:start() and Push:finish()
     if gameState == "start" then
         drawStartState()
+       sounds["music_adventure"]:play()
     elseif gameState == "play" then
         drawPlayState()
     elseif gameState == "over" then
@@ -131,19 +139,23 @@ function drawPlayState()
 
     local x, y = boarding:tileToPosition(1, tileSize)
    -- love.graphics.printf("Tile"..1, "at:", x, y)
-    love.graphics.printf("Score "..tostring(1).."/"..tostring(x).."/"..tostring(y), statFont ,200,10,200)
-
-   
+    --love.graphics.printf("Score "..tostring(1).."/"..tostring(x).."/"..tostring(y), statFont ,200,10,200)
    
 end
 
 function drawGameOverState()
    -- value = stats.totalScore
+   bg1:draw()
     love.graphics.printf("GameOver", titleFont, 0, 50,
         gameWidth, "center")
-    love.graphics.printf("Press Enter to Play or Escape to exit",
-        0, 90, gameWidth, "center")
    -- love.graphics.printf("FINAL SCORE: " .. value,
      --   0, 120, gameWidth, "center")
+    love.graphics.printf("Rows"..tostring(stats.numberOfRows), statFont, wordPostion.x,wordPostion.y,gameWidth,"center")
+    love.graphics.printf("Score "..tostring(stats.dieRecording), statFont ,wordPostion.x ,wordPostion.y + 30,gameWidth,"center") -- .."/"..tostring(self.maxSecs)
+    --love.graphics.printf("Time "..tostring(self.elaspsedTime), statFont,gameWidth-210,10,200,"right")
+
+   -- love.graphics.printf("GEMS: " .. player.gems, smallerTitleFont, wordPostion.x, wordPostion.y + 20, gameWidth,"center")
+    love.graphics.printf("Press Enter to Play or Escape to exit",
+        0, 350, gameWidth, "center")
 end
--- * git this 
+-- * git this wordPostion

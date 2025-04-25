@@ -48,7 +48,7 @@ function Die:update(dt)
 end
 
 function Die:draw()
-   -- local frameWidth = self.sheet:getWidth() / 6
+   --local frameWidth = self.sheet:getWidth() / 6
    --local frameHeight = self.sheet:getHeight()
 
     love.graphics.draw(self.sheet, self.frames[self.currentFace], self.x, self.y  ,0,0.25,0.25)

@@ -5,6 +5,7 @@ local Stats = require "src.games.Stats"
 local Anim8 = require "libs.anim8"
 local Tween = require "libs.tween"
 local Board = require "src.games.Board"
+local Die = require "src.games.Die"
 
 local idleSprite = love.graphics.newImage(
     "graphics/border/2D-Pixel-Art-Character-Template/Idle/Player Idle 48x48.png")
@@ -55,6 +56,7 @@ function Player:init(x,y)
     self.stats = Stats
     self.board = Board
     self.obj = Object
+    self.die = Die 
 
     self.ladderStart = {x = 0, y = 0}
     self.ladderEnd = {x = 0, y = 0}
@@ -80,6 +82,17 @@ function Player:createAnimations() -- fill up the animations & sprites
 end
 
 function Player:update(dt)
+
+    for i = 0,  9 do
+        self.obj[i] = {} -- Initialize each row
+    
+        for j = 0, 9 do 
+            if self.obj[i][j] == self.stats.dieRecording then
+        
+        end
+    end
+end
+
     if love.keyboard.isDown("d", "right") then
         self:setDirection("r")
         self.x = self.x + 96 * dt
@@ -93,7 +106,7 @@ function Player:update(dt)
         self.y = self.y - 96 * dt
         self.x = self.x + 96 * dt
         self.state = "climb"
-    elseif self.obj[1][9] % 10 == 1 then 
+   -- elseif self.obj[1][9] % 10 == 1 then 
 
 
     else

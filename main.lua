@@ -12,9 +12,11 @@ local Player = require "src.games.Player"
 local Snake = require "src.games.Snake"
 local Tween = require "libs.tween"
 local Sounds = require "src.games.Sounds"
+local Timer = require "libs.hump.timer"
 
-local wordPostion = { x = 700, y = 20, alpha = 0 }  -- creates a table of the word position
-local liftWord = Tween.new(2, wordPostion, { x = 200 }) -- Tween animation
+
+local wordPostion = { x = 700, y = 120, alpha = 0 }      -- creates a table of the word position
+local liftWord = Tween.new(2, wordPostion, { x = 20 }) -- Tween animation
 
 
 local tileSize = 96
@@ -32,12 +34,14 @@ function love.load()
 
     titleFont = love.graphics.newFont(32)
 
-    stats = Stats()
     die = Die(480, 300)
+    player = Player(0, 410, board)  -- where it starts drawing the player from 
+    stats = Stats()
+
 
     object = Object(50, 50, 140, 260)
 
-    player = Player(50,400)
+
 
     sounds = Sounds
 end
@@ -58,9 +62,11 @@ function love.keypressed(key)
     elseif key == "return" and gameState == "over" then
         gameState = "play"
     elseif key == "space" and gameState == "play" then
-            die:roll()
+        stats:Rows()
+        die:roll()
+        Timer.after(1.8, function()
             stats:Recording()
-            stats:Rows()
+        end)
     end
 end
 
@@ -71,7 +77,7 @@ function love.mousepressed(x, y, button, istouch)
         -- board:mousepressed(gx, gy)
     elseif debugFlag then
         if button == 2 and love.keyboard.isDown("lctrl", "rctrl") then
-           -- testexp:trigger(gx, gy)
+            -- testexp:trigger(gx, gy)
         elseif button == 2 then
             --board:cheatGem(gx, gy)
         end
@@ -82,19 +88,19 @@ end
 function love.update(dt)
     bg1:update(dt)
     stats:update(dt)
+    die:update(dt)
+    player:update(dt)
+    
 
     if gameState == "start" then
-     
-    elseif gameState == "play" then
-      die:update(dt)
-      player:update(dt)
-      if stats.dieRecording >= stats.MAX_BOARD_ROWS then
-        gameState = "over"
 
-      end
-   
+    elseif gameState == "play" then
+        Timer.update(dt)
+        if stats.dieRecording >= stats.MAX_BOARD_ROWS then
+            gameState = "over"
+        end
     elseif gameState == "over" then
-       
+        liftWord:update(dt)
     end
 end
 
@@ -105,7 +111,7 @@ function love.draw()
     -- always draw between Push:start() and Push:finish()
     if gameState == "start" then
         drawStartState()
-       sounds["music_adventure"]:play()
+        sounds["music_adventure"]:play()
     elseif gameState == "play" then
         drawPlayState()
     elseif gameState == "over" then
@@ -123,9 +129,9 @@ function drawStartState()
     bg1:draw()
 
     love.graphics.printf("SNAKE AND LADDERS", titleFont, 0, 50,
-    gameWidth, "center")
-love.graphics.printf("Press Enter to Play or Escape to exit",
-    0, 90, gameWidth, "center")
+        gameWidth, "center")
+    love.graphics.printf("Press Enter to Play or Escape to exit",
+        0, 90, gameWidth, "center")
 end
 
 function drawPlayState()
@@ -138,24 +144,24 @@ function drawPlayState()
     stats:draw()
 
     local x, y = boarding:tileToPosition(1, tileSize)
-   -- love.graphics.printf("Tile"..1, "at:", x, y)
+    -- love.graphics.printf("Tile"..1, "at:", x, y)
     --love.graphics.printf("Score "..tostring(1).."/"..tostring(x).."/"..tostring(y), statFont ,200,10,200)
-   
 end
 
 function drawGameOverState()
-   -- value = stats.totalScore
-   bg1:draw()
-    love.graphics.printf("GameOver", titleFont, 0, 50,
-        gameWidth, "center")
-   -- love.graphics.printf("FINAL SCORE: " .. value,
-     --   0, 120, gameWidth, "center")
-    love.graphics.printf("Rows"..tostring(stats.numberOfRows), statFont, wordPostion.x,wordPostion.y,gameWidth,"center")
-    love.graphics.printf("Score "..tostring(stats.dieRecording), statFont ,wordPostion.x ,wordPostion.y + 30,gameWidth,"center") -- .."/"..tostring(self.maxSecs)
+    -- value = stats.totalScore
+    bg1:draw()
+    love.graphics.printf("GameOver", titleFont, 0, 50,gameWidth, "center")
+    -- love.graphics.printf("FINAL SCORE: " .. value,
+    --   0, 120, gameWidth, "center")
+    love.graphics.printf("Rows" .. tostring(stats.numberOfRows), statFont, wordPostion.x, wordPostion.y, gameWidth,
+        "center")
+    love.graphics.printf("Score " .. tostring(stats.dieRecording), statFont, wordPostion.x, wordPostion.y + 30, gameWidth,
+        "center")                                                                                                                -- .."/"..tostring(self.maxSecs)
     --love.graphics.printf("Time "..tostring(self.elaspsedTime), statFont,gameWidth-210,10,200,"right")
 
-   -- love.graphics.printf("GEMS: " .. player.gems, smallerTitleFont, wordPostion.x, wordPostion.y + 20, gameWidth,"center")
-    love.graphics.printf("Press Enter to Play or Escape to exit",
-        0, 350, gameWidth, "center")
+    -- love.graphics.printf("GEMS: " .. player.gems, smallerTitleFont, wordPostion.x, wordPostion.y + 20, gameWidth,"center")
+    love.graphics.printf("Press Enter to Play or Escape to exit",0, 350, gameWidth, "center")
 end
+
 -- * git this wordPostion

@@ -7,38 +7,40 @@ local Tween = require "libs.tween"
 local Board = require "src.games.Board"
 local Die = require "src.games.Die"
 
+local statFont = love.graphics.newFont(26)
+
 local idleSprite = love.graphics.newImage(
     "graphics/border/2D-Pixel-Art-Character-Template/Idle/Player Idle 48x48.png")
-local idleGrid = Anim8.newGrid(48,48,
-    idleSprite:getWidth(),idleSprite:getHeight())
-local idleAnim = Anim8.newAnimation( idleGrid('1-10',1), 0.1)
+local idleGrid = Anim8.newGrid(48, 48,
+    idleSprite:getWidth(), idleSprite:getHeight())
+local idleAnim = Anim8.newAnimation(idleGrid('1-10', 1), 0.1)
 
 local runSprite = love.graphics.newImage(
     "graphics/border/2D-Pixel-Art-Character-Template/Run/player run 48x48.png")
-local runGrid = Anim8.newGrid(48,48,
-    runSprite:getWidth(),runSprite:getHeight())
-local runAnim = Anim8.newAnimation( runGrid('1-8',1), 0.1)
+local runGrid = Anim8.newGrid(48, 48,
+    runSprite:getWidth(), runSprite:getHeight())
+local runAnim = Anim8.newAnimation(runGrid('1-8', 1), 0.1)
 
 local jumpSprite = love.graphics.newImage(
     "graphics/border/2D-Pixel-Art-Character-Template/Jump/player new jump 48x48.png")
-local jumpGrid = Anim8.newGrid(48,48,
-    jumpSprite:getWidth(),jumpSprite:getHeight())
-local jumpAnim = Anim8.newAnimation( jumpGrid('1-6',1), 0.1)
+local jumpGrid = Anim8.newGrid(48, 48,
+    jumpSprite:getWidth(), jumpSprite:getHeight())
+local jumpAnim = Anim8.newAnimation(jumpGrid('1-6', 1), 0.1)
 
 local climbSprite = love.graphics.newImage(
     "graphics/border/2D-Pixel-Art-Character-Template/Climb (facing side of player)/Player Side-Climb 48x48.png")
-local climbGrid = Anim8.newGrid(48,48,
-    climbSprite:getWidth(),climbSprite:getHeight())
-local climbAnim = Anim8.newAnimation( climbGrid('1-4',1), 0.2)
+local climbGrid = Anim8.newGrid(48, 48,
+    climbSprite:getWidth(), climbSprite:getHeight())
+local climbAnim = Anim8.newAnimation(climbGrid('1-4', 1), 0.2)
 
 local landSprite = love.graphics.newImage(
     "graphics/border/2D-Pixel-Art-Character-Template/Land/player land 48x48.png")
-local landGrid = Anim8.newGrid(48,48,
-    landSprite:getWidth(),landSprite:getHeight())
-local landAnim = Anim8.newAnimation( landGrid('1-9',1), 0.12)
+local landGrid = Anim8.newGrid(48, 48,
+    landSprite:getWidth(), landSprite:getHeight())
+local landAnim = Anim8.newAnimation(landGrid('1-9', 1), 0.12)
 
-local Player = Class{}
-function Player:init(x,y)
+local Player = Class {}
+function Player:init(x, y, boards)
     self.x = x
     self.y = y
     self.name = "char"
@@ -47,21 +49,22 @@ function Player:init(x,y)
 
     self.state = "idle"
     self.dir = "r" -- r for right, l for left
+    self.finishedClimb = false 
     self.speedY = 0
+    self.imageNumber = 1
 
     self.animations = {}
     self.sprites = {}
     self:createAnimations()
 
-    self.stats = Stats
-    self.board = Board
-    self.obj = Object
-    self.die = Die 
+    --self.stats = Stats()
+    --self.board = boards
+    self.obj = Object(50, 50, 140, 260)
+    --self.die = Die()
 
-    self.ladderStart = {x = 0, y = 0}
-    self.ladderEnd = {x = 0, y = 0}
-    self.climbSpeed = 50 
-
+    self.ladderStart = { x = 0, y = 0 }
+    self.ladderEnd = { x = 0, y = 0 }
+    self.climbSpeed = 50
 end
 
 function Player:createAnimations() -- fill up the animations & sprites
@@ -82,109 +85,167 @@ function Player:createAnimations() -- fill up the animations & sprites
 end
 
 function Player:update(dt)
+    local i, j = self:getXY()
 
-    for i = 0,  9 do
-        self.obj[i] = {} -- Initialize each row
-    
-        for j = 0, 9 do 
-            if self.obj[i][j] == self.stats.dieRecording then
-        
+    if i and j and board.tiles[i] and board.tiles[i][j] then
+        local targetX = board.tiles[i][j].x1
+        local targetY = board.tiles[i][j].y1
+
+        if self.x < targetX then
+            -- Move right
+            self.x = self.x + 96 * dt
+            if self.x > targetX then
+                self.x = targetX
+            end
+            self:setDirection("r")
+            self.state = "run"
+
+        elseif self.x > targetX then
+            -- Move left
+            self.x = self.x - 96 * dt
+            if self.x < targetX then
+               self.x = targetX
+            end
+            self:setDirection("l")
+            self.state = "run"
+        else
+            -- Reached the tile
+            self.x = targetX
+            self.state = "idle"
+
+        end 
+
+if self.x == targetX then 
+        if self.y > targetY then 
+            self.y = self.y - 96 * dt
+            self.state = "jump"
+            if self.y < targetY then
+                self.y = targetY
+             end
+        else 
+            self.y = targetY
+            self.state = "idle"
         end
+    end 
+
+if self.x == targetX and self.y == targetY then 
+        self:handleObjectCollision(i,j, dt)
+        --self.state = "climb"
     end
 end
-
-    if love.keyboard.isDown("d", "right") then
-        self:setDirection("r")
-        self.x = self.x + 96 * dt
-        self.state = "run"
-    elseif love.keyboard.isDown("a", "left") then
-        self:setDirection("l")
-        self.x = self.x - 96 * dt
-        self.state = "run"
-    elseif love.keyboard.isDown("w", "up") then
-        self:setDirection("r")
-        self.y = self.y - 96 * dt
-        self.x = self.x + 96 * dt
-        self.state = "climb"
-   -- elseif self.obj[1][9] % 10 == 1 then 
-
-
-    else
-        self.state = "idle"
-    end
 
     self.animations[self.state]:update(dt)
 end
 
+function Player:startClimb(endTile, dt)
+    local ladderEnd = {x = endTile.x1, y = endTile.y1 }
 
-function Player:handleObjectCollision(obj)
-    if obj == self.ObjectTable[1] then
-        self.coins = self.coins +1
-        self.score = self.score +10
-        Sounds["coin"]:play()
-    elseif obj.name == "gem" then
-        self.gems = self.gems +1
-        self.score = self.score +50
-        Sounds["gem"]:play()
+    if self.y > ladderEnd.y and self.x > ladderEnd.x then 
+    self.x = self.x - 96 * dt
+    self.y = self.y - 96 * dt
+    if self.y < ladderEnd.y then
+        self.y = ladderEnd.y
+    end
+    if self.x < ladderEnd.x then
+        self.x = ladderEnd.x
+    end
+    self.state = "climb"
+
+    elseif self.y > ladderEnd.y and self.x < ladderEnd.x then 
+    self.x = self.x + 96 * dt
+    self.y = self.y - 96 * dt
+    if self.y < ladderEnd.y then
+        self.y = ladderEnd.y
+    end
+    if self.x > ladderEnd.x then
+        self.x = ladderEnd.x
+    end
+    self.state = "climb"
+
+    else -- gotten to the end tile 
+        self.x = ladderEnd.x
+        self.y = ladderEnd.y
+        stats.dieRecording = endTile.number
+        self.state = "idle"
+        self.finishedClimb = true
+    end 
+
+
+end
+
+function Player:handleObjectCollision(i, j, dt)
+    if self.finishedClimb then return end  -- don't climb again if finished
+    
+    if self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[0][2].number then
+        self:setDirection("l")
+        self.imageNumber = 1
+        self:startClimb(board.tiles[2][0], dt)
+
+    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[0][7].number then
+          ---  local obj = object.ObjectTable[board.tiles[i][j].number]
+            self:setDirection("r")
+            self.imageNumber = 2
+            self:startClimb(board.tiles[2][9], dt)
+    
+    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[2][7].number then
+              ---  local obj = object.ObjectTable[board.tiles[i][j].number]
+                self:setDirection("l")
+                self.imageNumber = 3
+                self:startClimb(board.tiles[8][3], dt)
+    
+    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[5][2].number then
+                 --   local obj = object.ObjectTable[board.tiles[i][j].number]
+                    self:setDirection("r")
+                    self.imageNumber = 4
+                    self:startClimb(board.tiles[7][3], dt)
+
+    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[7][0].number then
+                   --     local obj = object.ObjectTable[board.tiles[i][j].number]
+                        self:setDirection("r")
+                        self.imageNumber = 5
+                        self:startClimb(board.tiles[9][3], dt)
     end
 end
 
 function Player:draw()
+    local obj 
+    obj = object.ObjectTable[ self.imageNumber] 
+
+    if self.state == "climb" then 
+        self.animations[self.state]:draw(self.sprites[self.state],
+        math.floor(self.x), math.floor(self.y),obj.angle,1,1)
+   else
     self.animations[self.state]:draw(self.sprites[self.state],
-        math.floor(self.x), math.floor(self.y) )
+        math.floor(self.x), math.floor(self.y))
+    end 
+end
 
-  --  if debugFlag then
-    --    local w,h = self:getDimensions()
-    --    love.graphics.rectangle("line",self.x,self.y,w,h) -- sprite
-    end
-
-
-function Player:setCoords(x,y)
-        self.x = x
-        self.y = y
+function Player:setCoords(x, y) 
+    self.x = x
+    self.y = y
 end
 
 function Player:setDirection(newdir)
-        if self.dir ~= newdir then
-            self.dir = newdir
-            for states,anim in pairs(self.animations) do
-                anim:flipH()
-            end -- end for
-        end -- end if
+    if self.dir ~= newdir then
+        self.dir = newdir
+        for states, anim in pairs(self.animations) do
+            anim:flipH()
+        end     -- end for
+    end         -- end if
 end
 
-function Player:startClimb(startX, startY, endX, endY)
-    self.ladderStart = {x = startX, y = startY}
-    self.ladderEnd = {x = endX, y = endY}
-
-    -- normalize direction vector
-    local newX = endX - startX
-    local newY = endY - startY
-    local ladderDiagonal = math.sqrt(newX*newX + newX*newX)
-    self.climbDir = {x = newY / ladderDiagonal, y = newY / ladderDiagonal}
-
-    self.state = "climb"
-end
-
-function Player:getDimensions()
-    return self.animations[self.state]:getDimensions()
-end
-
---[[function Player:Jump(obj)
+function Player:getXY()
     for i = 0,  9 do
-        obj[i] = {} -- Initialize each row
-    
-        for j = 0, 9 do 
-            if obj[i][(j+1) % 10] == 1 and i % 2 == 1 then 
-            self.state = "jump"
-                self:setDirection("l")
-            elseif obj[i][(j+1) % 10] == 0 then
-            self.state = "jump"
-            self:setDirection("r")
-            end
-            end
-
+        for j = 0, 9 do
+            if i % 2 == 1 then 
+                if board.tiles[i][9-j].number == stats.dieRecording then 
+                return i,(9-j)
+            end 
+            elseif board.tiles[i][j].number == stats.dieRecording then
+                return i,j
+         end
+        end
     end
-end]]--
+end
 
-    return Player
+return Player

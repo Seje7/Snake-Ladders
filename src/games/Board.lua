@@ -6,7 +6,7 @@ local Boarding = require "src.games.Boarding"
 
 local Board = Class{}
 
-function Board:init(width, height)
+function Board:init(width, height) 
     self.tiles = {}
 
     self.x = 50 -- bottom coordinate of board for x-axis

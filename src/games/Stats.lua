@@ -1,13 +1,11 @@
 local Class = require "libs.hump.class"
-local Die = require "src.games.Die"
 local Timer = require "libs.hump.timer"
 
 local statFont = love.graphics.newFont(26)
 
 local Stats = Class{}
-function Stats:init(x, y)
+function Stats:init()
 
-    self.die = Die()
     self.dieRecording = 0
     self.elaspsedTime = 0
     self.numberOfRows = 0 
@@ -23,8 +21,8 @@ end
 
 function Stats:draw()
     love.graphics.setColor(1,0,0) -- Magenta
-    love.graphics.printf("Rows"..tostring(self.numberOfRows), statFont, 150,10,200)
-    love.graphics.printf("Score "..tostring(self.dieRecording), statFont ,10,10,200) -- .."/"..tostring(self.maxSecs)
+   -- love.graphics.printf("Rows: "..tostring(self.numberOfRows), statFont, 150,10,200)
+    love.graphics.printf("Score: "..tostring(self.dieRecording), statFont ,480,170,200) -- .."/"..tostring(self.maxSecs)
     --love.graphics.printf("Time "..tostring(self.elaspsedTime), statFont,gameWidth-210,10,200,"right")
     love.graphics.setColor(1,1,1) -- White
 end
@@ -34,19 +32,24 @@ function Stats:update(dt) -- for now, empty function
     end
 
 function Stats:Recording()
-    if self.die.currentFace == 1 then 
+    if stats.dieRecording > 100 then
+        stats.dieRecording = 100
+    
+    elseif self.numberOfRows ~= 0 then 
+    if  die.currentFace == 1 then 
         self.dieRecording = self.dieRecording + 1
-    elseif self.die.currentFace == 2 then
+    elseif die.currentFace == 2 then
         self.dieRecording = self.dieRecording + 2
-    elseif self.die.currentFace == 3 then
+    elseif die.currentFace == 3 then
         self.dieRecording = self.dieRecording + 3
-    elseif self.die.currentFace == 4 then
+    elseif die.currentFace == 4 then
         self.dieRecording = self.dieRecording + 4
-    elseif self.die.currentFace == 5 then
+    elseif die.currentFace == 5 then
         self.dieRecording = self.dieRecording + 5
-    elseif self.die.currentFace == 6 then
+    elseif die.currentFace == 6 then
         self.dieRecording = self.dieRecording + 6
     end
+end 
 end
 
 function Stats:Rows()

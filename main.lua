@@ -44,6 +44,8 @@ function love.load()
     object = Object(50, 50, 140, 260)
 
     sounds = Sounds
+    sounds["music_adventure"]:setLooping(true)
+    sounds["music_adventure"]:play()
 end
 
 -- When the game window resizes
@@ -107,7 +109,6 @@ function love.draw()
     -- always draw between Push:start() and Push:finish()
     if gameState == "start" then
         drawStartState()
-        sounds["music_adventure"]:play()
     elseif gameState == "play" then
         drawPlayState()
     elseif gameState == "over" then

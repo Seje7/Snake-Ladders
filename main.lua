@@ -13,6 +13,7 @@ local Snake = require "src.games.Snake"
 local Tween = require "libs.tween"
 local Sounds = require "src.games.Sounds"
 local Timer = require "libs.hump.timer"
+local Explosion = require "src.games.Explosion"
 
 
 local wordPostion = { x = 700, y = 120, alpha = 0 }      -- creates a table of the word position
@@ -38,10 +39,9 @@ function love.load()
     player = Player(0, 410, board)  -- where it starts drawing the player from 
     stats = Stats()
 
+    explosion = Explosion()
 
     object = Object(50, 50, 140, 260)
-
-
 
     sounds = Sounds
 end
@@ -60,27 +60,22 @@ function love.keypressed(key)
     elseif key == "return" and gameState == "start" then
         gameState = "play"
     elseif key == "return" and gameState == "over" then
+        stats.dieRecording = 0
+        stats.elaspsedTime = 0
+        stats.numberOfRows = 0
+        player.x = 0
+        player.y = 410 
+        player.state = "idle"
+        player:setDirection("r")
+        
         gameState = "play"
     elseif key == "space" and gameState == "play" then
         stats:Rows()
         die:roll()
+        explosion:trigger(255, 165,0,550,370) -- redd green blue x and y position 
         Timer.after(1.8, function()
             stats:Recording()
         end)
-    end
-end
-
--- Event to handle mouse pressed (there is another for mouse release)
-function love.mousepressed(x, y, button, istouch)
-    local gx, gy = Push:toGame(x, y)
-    if button == 1 then -- regurlar mouse click
-        -- board:mousepressed(gx, gy)
-    elseif debugFlag then
-        if button == 2 and love.keyboard.isDown("lctrl", "rctrl") then
-            -- testexp:trigger(gx, gy)
-        elseif button == 2 then
-            --board:cheatGem(gx, gy)
-        end
     end
 end
 
@@ -96,6 +91,7 @@ function love.update(dt)
 
     elseif gameState == "play" then
         Timer.update(dt)
+        explosion:update(dt)
         if stats.dieRecording >= stats.MAX_BOARD_ROWS then
             gameState = "over"
         end
@@ -142,6 +138,9 @@ function drawPlayState()
 
     die:draw()
     stats:draw()
+    if explosion:isActive() then
+        explosion:draw()
+    end
 
     local x, y = boarding:tileToPosition(1, tileSize)
 end

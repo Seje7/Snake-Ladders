@@ -1,11 +1,11 @@
 local Class = require "libs.hump.class"
-local imgParticle = love.graphics.newImage("graphics/particles/20.png")
+local imgParticle = love.graphics.newImage("graphics/particles/34.png")
 local Explosion = Class{}
 
-function Explosion:init(stats)
+function Explosion:init()
     self.particleSystem = love.graphics.newParticleSystem(imgParticle,100) 
                                                       -- image, #particles
-    self.particleSystem:setParticleLifetime(0.2, 1.0) -- 0.2 to 1.0 secs
+    self.particleSystem:setParticleLifetime(0.2, 3.0) -- 0.2 to 1.0 secs
     self.particleSystem:setEmissionRate(0) -- No continuous emission
     self.particleSystem:setSizes(0.1, 0) -- Start tiny, shrink to 0
     self.particleSystem:setSpeed(0, 20) -- Random speed range
@@ -16,7 +16,7 @@ function Explosion:init(stats)
 
 end
 
-function Explosion:setColor(r,g,b,x,y) -- sets the particle color
+function Explosion:setColor(r,g,b) -- sets the particle color
     self.particleSystem:setColors(r,g,b,1,r,g,b,0)
 end
 
@@ -24,11 +24,10 @@ function Explosion:trigger(r,g,b,x,y)
     if x and y then -- if x & y not nil, set then now
         self.particleSystem:setPosition(x, y)
         
-       -- self:setColor(r,g,b,x,y) -- changes color just before it emits 
+       self:setColor(r,g,b) -- changes color just before it emits 
     end
 
-   
-   self.particleSystem:emit(30) -- Emit 30 particles
+   self.particleSystem:emit(60) -- Emit 30 particles
 end
 
 function Explosion:update(dt)

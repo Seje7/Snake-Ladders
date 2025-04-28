@@ -11,7 +11,7 @@ function Stats:init()
     self.numberOfRows = 0 
     self.MAX_BOARD_ROWS = 100
 
-    Timer.every(1, function ()
+    Timer.every(2, function ()
         if gameState == "play" then
             self.elaspsedTime = self.elaspsedTime + 1    
              end

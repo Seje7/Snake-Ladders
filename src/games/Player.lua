@@ -194,37 +194,39 @@ end
 function Player:handleObjectCollision(i, j)
     if self.finishedClimb == true then return end -- don't climb again if finished
 
-    if self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[0][2].number then
+    if (self.state ~= "climb") and board.tiles[i][j] then
+    if  board.tiles[i][j].number == board.tiles[0][2].number then
         self:setDirection("l")
         self.imageNumber = 3
         self.state = "climb"
         self.finishedClimb = false
         return
-    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[0][7].number then
+    elseif board.tiles[i][j].number == board.tiles[0][7].number then
         self:setDirection("r")
         self.imageNumber = 4
         self.state = "climb"
         self.finishedClimb = false
         return
-    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[2][7].number then
+    elseif board.tiles[i][j].number == board.tiles[2][7].number then
         self:setDirection("l")
         self.imageNumber = 1
         self.state = "climb"
         self.finishedClimb = false
         return
-    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[5][2].number then
+    elseif board.tiles[i][j].number == board.tiles[5][2].number then
         self:setDirection("r")
         self.imageNumber = 5
         self.state = "climb"
         self.finishedClimb = false
         return
-    elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[7][0].number then
+    elseif board.tiles[i][j].number == board.tiles[7][0].number then
         self:setDirection("r")
         self.imageNumber = 2
         self.state = "climb"
         self.finishedClimb = false
         return
     end
+end
 end
 
 function Player:draw()

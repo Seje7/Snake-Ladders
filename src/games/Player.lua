@@ -148,7 +148,10 @@ function Player:update(dt)
             end
         end
 
+if self.state == "idle" then
         self:handleObjectCollision(i, j)
+end 
+
     end
     self.animations[self.state]:update(dt)
 end
@@ -194,7 +197,7 @@ end
 function Player:handleObjectCollision(i, j)
     if self.finishedClimb == true then return end -- don't climb again if finished
 
-    if (self.state ~= "climb") and board.tiles[i][j] then
+    if self.state ~= "climb" and board.tiles[i][j] then
     if  board.tiles[i][j].number == board.tiles[0][2].number then
         self:setDirection("l")
         self.imageNumber = 3

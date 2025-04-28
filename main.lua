@@ -16,7 +16,7 @@ local Timer = require "libs.hump.timer"
 local Explosion = require "src.games.Explosion"
 
 
-local wordPostion = { x = 700, y = 120, alpha = 0 }      -- creates a table of the word position
+local wordPostion = { x = 700, y = 120, alpha = 0 }    -- creates a table of the word position
 local liftWord = Tween.new(2, wordPostion, { x = 20 }) -- Tween animation
 
 
@@ -36,7 +36,7 @@ function love.load()
     titleFont = love.graphics.newFont(32)
 
     die = Die(480, 300)
-    player = Player(0, 410, board)  -- where it starts drawing the player from 
+    player = Player(0, 410, board) -- where it starts drawing the player from
     stats = Stats()
 
     explosion = Explosion()
@@ -66,15 +66,15 @@ function love.keypressed(key)
         stats.elaspsedTime = 0
         stats.numberOfRows = 0
         player.x = 0
-        player.y = 410 
+        player.y = 410
         player.state = "idle"
         player:setDirection("r")
-        
+
         gameState = "play"
     elseif key == "space" and gameState == "play" then
         stats:Rows()
         die:roll()
-        explosion:trigger(255, 165,0,550,370) -- redd green blue x and y position 
+        explosion:trigger(255, 165, 0, 550, 370) -- redd green blue x and y position
         Timer.after(1.8, function()
             stats:Recording()
         end)
@@ -87,7 +87,7 @@ function love.update(dt)
     stats:update(dt)
     die:update(dt)
     player:update(dt)
-    
+
 
     if gameState == "start" then
 
@@ -147,14 +147,16 @@ function drawPlayState()
 end
 
 function drawGameOverState()
-  
     bg1:draw()
-    love.graphics.printf("GameOver", titleFont, 0, 50,gameWidth, "center")
-    love.graphics.printf("Rows" .. tostring(stats.numberOfRows), statFont, wordPostion.x, wordPostion.y, gameWidth,"center")
-    love.graphics.printf("FINAL Score " .. tostring(stats.dieRecording), statFont, wordPostion.x, wordPostion.y + 30, gameWidth,"center")
-    love.graphics.printf("Time "..tostring(stats.elaspsedTime), statFont, wordPostion.x,wordPostion.y + 60, gameWidth,"center")  -- .."/"..tostring(self.maxSecs)
-   
-    love.graphics.printf("Press Enter to Play or Escape to exit",0, 350, gameWidth, "center")
+    love.graphics.printf("GameOver", titleFont, 0, 50, gameWidth, "center")
+    love.graphics.printf("Rows" .. tostring(stats.numberOfRows), statFont, wordPostion.x, wordPostion.y, gameWidth,
+        "center")
+    love.graphics.printf("FINAL Score " .. tostring(stats.dieRecording), statFont, wordPostion.x, wordPostion.y + 30,
+        gameWidth, "center")
+    love.graphics.printf("Time " .. tostring(stats.elaspsedTime), statFont, wordPostion.x, wordPostion.y + 60, gameWidth,
+        "center") -- .."/"..tostring(self.maxSecs)
+
+    love.graphics.printf("Press Enter to Play or Escape to exit", 0, 350, gameWidth, "center")
 end
 
 -- * git this wordPostion

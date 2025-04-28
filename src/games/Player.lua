@@ -49,7 +49,7 @@ function Player:init(x, y, boards)
 
     self.state = "idle"
     self.dir = "r" -- r for right, l for left
-    self.finishedClimb = false 
+    self.finishedClimb = false
     self.speedY = 0
     self.imageNumber = 1
 
@@ -85,21 +85,21 @@ function Player:createAnimations() -- fill up the animations & sprites
 end
 
 function Player:update(dt)
-     if self.state == "climb" and self.finishedClimb == false then
-        if self.imageNumber == 1 then 
+    if self.state == "climb" and self.finishedClimb == false then
+        if self.imageNumber == 1 then
             self:startClimb(board.tiles[8][3], dt)
         elseif self.imageNumber == 3 then
             self:startClimb(board.tiles[2][0], dt)
-        elseif self.imageNumber == 2 then 
+        elseif self.imageNumber == 2 then
             self:startClimb(board.tiles[9][3], dt)
-        elseif self.imageNumber == 4 then 
+        elseif self.imageNumber == 4 then
             self:startClimb(board.tiles[2][9], dt)
-        elseif self.imageNumber == 5 then  
+        elseif self.imageNumber == 5 then
             self:startClimb(board.tiles[7][3], dt)
         end
-            self.animations[self.state]:update(dt)
-            return
-        end
+        self.animations[self.state]:update(dt)
+        return
+    end
 
     local i, j = self:getXY()
 
@@ -107,7 +107,7 @@ function Player:update(dt)
         local targetX = board.tiles[i][j].x1
         local targetY = board.tiles[i][j].y1
 
-        if self.x < targetX  then
+        if self.x < targetX then
             -- Move right
             self.x = self.x + 96 * dt
             if self.x > targetX then
@@ -115,128 +115,129 @@ function Player:update(dt)
             end
             self:setDirection("r")
             self.state = "run"
-
+            sounds["running"]:setLooping(true)
+            sounds["running"]:play()
         elseif self.x > targetX then
             -- Move left
             self.x = self.x - 96 * dt
             if self.x < targetX then
-               self.x = targetX
+                self.x = targetX
             end
             self:setDirection("l")
             self.state = "run"
+            sounds["running"]:setLooping(true)
+            sounds["running"]:play()
         else
             -- Reached the tile
             self.x = targetX
             self.state = "idle"
-
-        end 
-
-if self.x == targetX then 
-        if self.y > targetY then 
-            self.y = self.y - 96 * dt
-            self.state = "jump"
-            if self.y < targetY then
-                self.y = targetY
-             end
-        else 
-            self.y = targetY
-            self.state = "idle"
+            sounds["running"]:setLooping(false)
+            sounds["running"]:stop()
         end
-    end 
 
-   self:handleObjectCollision(i, j)  
-end
+        if self.x == targetX then
+            if self.y > targetY then
+                self.y = self.y - 96 * dt
+                self.state = "jump"
+                if self.y < targetY then
+                    self.y = targetY
+                end
+            else
+                self.y = targetY
+                self.state = "idle"
+            end
+        end
+
+        self:handleObjectCollision(i, j)
+    end
     self.animations[self.state]:update(dt)
 end
 
 function Player:startClimb(endTile, dt)
-    local ladderEnd = {x = endTile.x1, y = endTile.y1 }
+    local ladderEnd = { x = endTile.x1, y = endTile.y1 }
 
-    if self.y > ladderEnd.y and self.x > ladderEnd.x then 
-    self:setDirection("l")
-    self.x = self.x - 60 * dt
-    self.y = self.y - 60 * dt
-    if self.y < ladderEnd.y then
-        self.y = ladderEnd.y
-    end
-    if self.x < ladderEnd.x then
-        self.x = ladderEnd.x
-    end
-
-
-    elseif self.y > ladderEnd.y and self.x < ladderEnd.x then 
-    self:setDirection("r")
-    self.x = self.x + 60 * dt
-    self.y = self.y - 60 * dt
-    if self.y < ladderEnd.y then
-        self.y = ladderEnd.y
-    end
-    if self.x > ladderEnd.x then
-        self.x = ladderEnd.x
-    end
-
-    else -- gotten to the end tile 
+    if self.y > ladderEnd.y and self.x > ladderEnd.x then
+        self:setDirection("l")
+        self.x = self.x - 60 * dt
+        self.y = self.y - 60 * dt
+        if self.y < ladderEnd.y then
+            self.y = ladderEnd.y
+        end
+        if self.x < ladderEnd.x then
+            self.x = ladderEnd.x
+        end
+        sounds["ladder"]:setLooping(true)
+        sounds["ladder"]:play()
+    elseif self.y > ladderEnd.y and self.x < ladderEnd.x then
+        self:setDirection("r")
+        self.x = self.x + 60 * dt
+        self.y = self.y - 60 * dt
+        if self.y < ladderEnd.y then
+            self.y = ladderEnd.y
+        end
+        if self.x > ladderEnd.x then
+            self.x = ladderEnd.x
+        end
+        sounds["ladder"]:setLooping(true)
+        sounds["ladder"]:play()
+    else -- gotten to the end tile
         self.x = ladderEnd.x
         self.y = ladderEnd.y
         stats.dieRecording = endTile.number
         self.state = "idle"
         self.finishedClimb = true
-    end 
-
-
+        sounds["ladder"]:setLooping(false)
+        sounds["ladder"]:stop()
+    end
 end
 
 function Player:handleObjectCollision(i, j)
-  if self.finishedClimb == true then return end  -- don't climb again if finished
-    
+    if self.finishedClimb == true then return end -- don't climb again if finished
+
     if self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[0][2].number then
         self:setDirection("l")
         self.imageNumber = 3
         self.state = "climb"
         self.finishedClimb = false
         return
-
     elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[0][7].number then
-            self:setDirection("r")
-            self.imageNumber = 4
-            self.state = "climb"
-            self.finishedClimb = false
-            return
-    
+        self:setDirection("r")
+        self.imageNumber = 4
+        self.state = "climb"
+        self.finishedClimb = false
+        return
     elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[2][7].number then
-                self:setDirection("l")
-                self.imageNumber = 1
-                self.state = "climb"
-                self.finishedClimb = false
-                return
-    
+        self:setDirection("l")
+        self.imageNumber = 1
+        self.state = "climb"
+        self.finishedClimb = false
+        return
     elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[5][2].number then
-                    self:setDirection("r")
-                    self.imageNumber = 5
-                    self.state = "climb"
-                    self.finishedClimb = false
-                    return
-
+        self:setDirection("r")
+        self.imageNumber = 5
+        self.state = "climb"
+        self.finishedClimb = false
+        return
     elseif self.state == "idle" and board.tiles[i][j] and board.tiles[i][j].number == board.tiles[7][0].number then
-                        self:setDirection("r")
-                        self.imageNumber = 2
-                        self.state = "climb"
-                        self.finishedClimb = false
-                        return
+        self:setDirection("r")
+        self.imageNumber = 2
+        self.state = "climb"
+        self.finishedClimb = false
+        return
     end
 end
 
 function Player:draw()
-    local obj 
-    obj = object.ObjectTable[self.imageNumber] 
+    local obj
+    obj = object.ObjectTable[self.imageNumber]
 
-    if self.state == "climb" then 
+    if self.state == "climb" then
         self.animations[self.state]:draw(self.sprites[self.state],
-        math.floor(self.x), math.floor(self.y),obj.angle,1,1)
-   else
-    self.animations[self.state]:draw(self.sprites[self.state],
-        math.floor(self.x), math.floor(self.y))
-    end 
+            math.floor(self.x), math.floor(self.y), obj.angle, 1, 1)
+    else
+        self.animations[self.state]:draw(self.sprites[self.state],
+            math.floor(self.x), math.floor(self.y))
+    end
 end
 
 function Player:setDirection(newdir)
@@ -244,20 +245,20 @@ function Player:setDirection(newdir)
         self.dir = newdir
         for states, anim in pairs(self.animations) do
             anim:flipH()
-        end     -- end for
-    end         -- end if
+        end -- end for
+    end     -- end if
 end
 
 function Player:getXY()
-    for i = 0,  9 do
+    for i = 0, 9 do
         for j = 0, 9 do
-            if i % 2 == 1 then 
-                if board.tiles[i][9-j].number == stats.dieRecording then 
-                return i,(9-j)
-            end 
+            if i % 2 == 1 then
+                if board.tiles[i][9 - j].number == stats.dieRecording then
+                    return i, (9 - j)
+                end
             elseif board.tiles[i][j].number == stats.dieRecording then
-                return i,j
-         end
+                return i, j
+            end
         end
     end
 end

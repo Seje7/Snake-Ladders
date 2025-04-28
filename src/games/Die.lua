@@ -1,5 +1,5 @@
 local Class = require "libs.hump.class"
-local Die = Class{}
+local Die = Class {}
 
 function Die:init(x, y)
     self.x = x
@@ -9,15 +9,15 @@ function Die:init(x, y)
     self.sheet = love.graphics.newImage("graphics/sprites/Dice.png")
     self.frames = {}
 
-    local frameWidth = self.sheet:getWidth() / 6 -- of each die 
-    local frameHeight = self.sheet:getHeight() -- height of the die 
+    local frameWidth = self.sheet:getWidth() / 6 -- of each die
+    local frameHeight = self.sheet:getHeight()   -- height of the die
 
     -- This divides the die sprite sheet into 6
     for i = 0, 5 do
         self.frames[i + 1] = love.graphics.newQuad(
-            i * frameWidth, 0, -- top left of the x, y coordinates of the die 
-            frameWidth, frameHeight, -- the width and height of each die 
-            self.sheet:getDimensions() -- total size of the die 
+            i * frameWidth, 0,         -- top left of the x, y coordinates of the die
+            frameWidth, frameHeight,   -- the width and height of each die
+            self.sheet:getDimensions() -- total size of the die
         )
     end
 
@@ -48,7 +48,7 @@ function Die:update(dt)
 end
 
 function Die:draw()
-    love.graphics.draw(self.sheet, self.frames[self.currentFace], self.x, self.y,0,0.25,0.25)
+    love.graphics.draw(self.sheet, self.frames[self.currentFace], self.x, self.y, 0, 0.25, 0.25)
 end
 
 return Die

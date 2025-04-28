@@ -9,8 +9,8 @@ function Die:init(x, y)
     self.sheet = love.graphics.newImage("graphics/sprites/Dice.png")
     self.frames = {}
 
-    local frameWidth = self.sheet:getWidth() / 6
-    local frameHeight = self.sheet:getHeight()
+    local frameWidth = self.sheet:getWidth() / 6 -- of each die 
+    local frameHeight = self.sheet:getHeight() -- height of the die 
 
     -- This divides the die sprite sheet into 6
     for i = 0, 5 do
@@ -48,10 +48,7 @@ function Die:update(dt)
 end
 
 function Die:draw()
-   --local frameWidth = self.sheet:getWidth() / 6
-   --local frameHeight = self.sheet:getHeight()
-
-    love.graphics.draw(self.sheet, self.frames[self.currentFace], self.x, self.y  ,0,0.25,0.25)
+    love.graphics.draw(self.sheet, self.frames[self.currentFace], self.x, self.y,0,0.25,0.25)
 end
 
 return Die

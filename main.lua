@@ -144,23 +144,16 @@ function drawPlayState()
     stats:draw()
 
     local x, y = boarding:tileToPosition(1, tileSize)
-    -- love.graphics.printf("Tile"..1, "at:", x, y)
-    --love.graphics.printf("Score "..tostring(1).."/"..tostring(x).."/"..tostring(y), statFont ,200,10,200)
 end
 
 function drawGameOverState()
-    -- value = stats.totalScore
+  
     bg1:draw()
     love.graphics.printf("GameOver", titleFont, 0, 50,gameWidth, "center")
-    -- love.graphics.printf("FINAL SCORE: " .. value,
-    --   0, 120, gameWidth, "center")
-    love.graphics.printf("Rows" .. tostring(stats.numberOfRows), statFont, wordPostion.x, wordPostion.y, gameWidth,
-        "center")
-    love.graphics.printf("Score " .. tostring(stats.dieRecording), statFont, wordPostion.x, wordPostion.y + 30, gameWidth,
-        "center")                                                                                                                -- .."/"..tostring(self.maxSecs)
-    --love.graphics.printf("Time "..tostring(self.elaspsedTime), statFont,gameWidth-210,10,200,"right")
-
-    -- love.graphics.printf("GEMS: " .. player.gems, smallerTitleFont, wordPostion.x, wordPostion.y + 20, gameWidth,"center")
+    love.graphics.printf("Rows" .. tostring(stats.numberOfRows), statFont, wordPostion.x, wordPostion.y, gameWidth,"center")
+    love.graphics.printf("FINAL Score " .. tostring(stats.dieRecording), statFont, wordPostion.x, wordPostion.y + 30, gameWidth,"center")
+    love.graphics.printf("Time "..tostring(stats.elaspsedTime), statFont, wordPostion.x,wordPostion.y + 60, gameWidth,"center")  -- .."/"..tostring(self.maxSecs)
+   
     love.graphics.printf("Press Enter to Play or Escape to exit",0, 350, gameWidth, "center")
 end
 

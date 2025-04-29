@@ -84,7 +84,7 @@ end
 -- Update is executed each frame, dt is delta time (a fraction of a sec)
 function love.update(dt)
     bg1:update(dt)
-    stats:update(dt)
+   
     die:update(dt)
     player:update(dt)
 
@@ -92,7 +92,8 @@ function love.update(dt)
     if gameState == "start" then
 
     elseif gameState == "play" then
-        Timer.update(dt)
+        stats:update(dt)
+       --- Timer.update(dt)
         explosion:update(dt)
         if stats.dieRecording >= stats.MAX_BOARD_ROWS then
             gameState = "over"

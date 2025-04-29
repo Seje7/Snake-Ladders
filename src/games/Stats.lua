@@ -10,7 +10,7 @@ function Stats:init()
     self.numberOfRows = 0
     self.MAX_BOARD_ROWS = 100
 
-    Timer.every(2, function()
+    Timer.every(1, function()
         if gameState == "play" then
             self.elaspsedTime = self.elaspsedTime + 1
         end
@@ -26,7 +26,7 @@ function Stats:draw()
 end
 
 function Stats:update(dt) -- for now, empty function
-    Timer.update(dt)
+   Timer.update(dt)
 end
 
 function Stats:Recording()

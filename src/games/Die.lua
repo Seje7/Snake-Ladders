@@ -37,8 +37,8 @@ function Die:update(dt)
     if self.rolling then
         self.timer = self.timer + dt
         if self.timer < self.rollDuration then
-            if math.floor(self.timer / self.timePerFrame) ~= math.floor((self.timer - dt) / self.timePerFrame) then
-                self.currentFace = love.math.random(1, 6)
+            if math.floor(self.timer / self.timePerFrame) ~= math.floor((self.timer - dt) / self.timePerFrame) then -- checks if the current die frame matches the previous one 
+            self.currentFace = love.math.random(1, 6)
             end
         else
             self.rolling = false
